@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shogi", "shogi.csproj", "{4EC0BCE0-E797-4795-8DCA-85EC55A6B6BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "shogi", "shogi.csproj", "{4EC0BCE0-E797-4795-8DCA-85EC55A6B6BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
