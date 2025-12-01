@@ -6,31 +6,26 @@ using System.Threading.Tasks;
 
 namespace shogi
 {
-    class Board
+    public class Board
     {
-        static void Main()
+        public const int Size = 9;
+        private readonly string[,] _cells = new string[Size, Size];
+
+        public void Init()
         {
-            const int size = 9;
-            string[,] board = new string[size, size];
+            for (int row = 0; row < Size; row++)
+                for (int col = 0; col < Size; col++)
+                    _cells[row, col] = ".";
+        }
 
-            // Заполняем поле пустыми клетками
-            for (int row = 0; row < size; row++)
-            {
-                for (int col = 0; col < size; col++)
-                {
-                    board[row, col] = ".";
-                }
-            }
-
-            // Отрисовываем поле в консоли
+        public void Render()
+        {
             Console.WriteLine("   a b c d e f g h i");
-            for (int row = 0; row < size; row++)
+            for (int row = 0; row < Size; row++)
             {
                 Console.Write($"{row + 1} ");
-                for (int col = 0; col < size; col++)
-                {
-                    Console.Write($" {board[row, col]}");
-                }
+                for (int col = 0; col < Size; col++)
+                    Console.Write($" {_cells[row, col]}");
                 Console.WriteLine();
             }
         }
