@@ -54,7 +54,9 @@ namespace shogi.UI
             var engine = new GameEngine();
             engine.Init();
 
-            var renderer = new ConsoleRenderer(engine.Board);
+            var board = new Board();
+            board.UpdateFromGameEngine(engine.Board);
+            var renderer = new ConsoleRenderer(board);
 
             while (!engine.IsFinished)
             {
@@ -78,7 +80,7 @@ namespace shogi.UI
             var name = Console.ReadLine();
 
             var record = new RecordEntry(name ?? "Player", engine.Score);
-            await _recordStorage.AddRecordAsync(record);
+            _recordStorage.AddRecord(record);
         }
 
         private async Task LoadGameAsync()
@@ -92,7 +94,9 @@ namespace shogi.UI
             }
 
             var engine = loaded;
-            var renderer = new ConsoleRenderer(engine.Board);
+            var board = new Board();
+            board.UpdateFromGameEngine(engine.Board);
+            var renderer = new ConsoleRenderer(board);
 
             while (!engine.IsFinished)
             {

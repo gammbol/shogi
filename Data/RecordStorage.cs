@@ -30,5 +30,7 @@ namespace shogi.Data
         {
             File.AppendAllText(_path, entry + Environment.NewLine);
         }
+
     }
+
 }
