@@ -10,6 +10,7 @@ namespace shogi
     {
         public const int Size = 9;
         private readonly string[,] _cells = new string[Size, Size];
+        public string[,] Cells => _cells;
 
         public void Init()
         {
