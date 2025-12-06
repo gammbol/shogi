@@ -29,11 +29,11 @@ namespace shogi
         public Player Owner { get; set; }
         public bool Promoted { get; set; }
 
-        public Piece(PieceType type, Player owner)
+        public Piece(PieceType type, Player owner, bool promoted = false)
         {
             Type = type;
             Owner = owner;
-            Promoted = false;
+            Promoted = promoted;
         }
     }
 }

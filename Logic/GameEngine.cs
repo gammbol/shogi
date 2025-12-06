@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using shogi.Data;
 
 namespace shogi
 {
@@ -10,12 +11,19 @@ namespace shogi
         public bool IsFinished { get; private set; }
         public int Score { get; private set; }
 
-        public GameEngine()
+        private GameStorage Storage;
+
+        public GameEngine(
+            Piece[,] board = new Piece[9,9],  
+            Player currentPlayer = Player.Black, 
+            int score = 0
+            )
         {
             Board = new Piece[9, 9];
             CurrentPlayer = Player.Black;
             IsFinished = false;
             Score = 0;
+            Storage = new GameStorage("savefile.txt");
         }
 
         public void Init()
@@ -78,6 +86,12 @@ namespace shogi
         {
             if (string.IsNullOrWhiteSpace(input))
                 return false;
+
+            if (input == "SAVEGAME")
+            {
+                Storage.SaveAsync(this);
+                Console.WriteLine("Game saved!");
+            }
 
             // Парсим ввод "fromX fromY toX toY" (например: "2 2 2 3")
             var parts = input.Split(' ');
