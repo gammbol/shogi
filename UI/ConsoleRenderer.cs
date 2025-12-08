@@ -1,4 +1,5 @@
 ﻿using System;
+using shogi.Logic;
 
 namespace shogi.UI
 {
@@ -13,11 +14,9 @@ namespace shogi.UI
 
         public void Render()
         {
-            // просто вызываем метод Render у Board
             _board.Render();
         }
 
-        // метод для обновления доски из GameEngine
         public void UpdateBoard(Piece[,] pieces)
         {
             _board.UpdateFromGameEngine(pieces);

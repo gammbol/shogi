@@ -1,7 +1,8 @@
 ﻿using System;
 using shogi;
+using shogi.Logic;
 
-namespace shogi
+namespace shogi.UI
 {
     public class Board
     {
