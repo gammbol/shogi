@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace shogi
+namespace shogi.Logic
 {
     public static class PieceLogic
     {

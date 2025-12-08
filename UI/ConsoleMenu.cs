@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using shogi;
 using shogi.Data;
+using shogi.Logic;
 
-namespace shogi.UI
+namespace Shogi.UI
 {
     public class ConsoleMenu
     {
@@ -17,10 +19,10 @@ namespace shogi.UI
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("1.Новая игра");
-                Console.WriteLine("2.Загрузить игру");
-                Console.WriteLine("3.Рекорды");
-                Console.WriteLine("4.Выход");
+                Console.WriteLine("1. Новая игра");
+                Console.WriteLine("2. Загрузить игру");
+                Console.WriteLine("3. Рекорды");
+                Console.WriteLine("4. Выход");
                 Console.Write("Выберите пункт: ");
 
                 var key = Console.ReadLine();
@@ -44,6 +46,7 @@ namespace shogi.UI
 
                     default:
                         Console.WriteLine("Неверный ввод");
+                        Thread.Sleep(800);
                         break;
                 }
             }
@@ -62,14 +65,17 @@ namespace shogi.UI
             {
                 Console.Clear();
                 renderer.Render();
-                Console.WriteLine("Введите ход (пример: 2 3 2 4):");
 
+                Console.WriteLine("Введите ход (пример: 2 3 2 4):");
                 var input = Console.ReadLine();
+
                 if (!engine.TryMakeMove(input))
                 {
                     Console.WriteLine("Неверный ход");
                     Thread.Sleep(800);
                 }
+
+                renderer.UpdateBoard(engine.Board);
             }
 
             Console.Clear();
@@ -77,23 +83,21 @@ namespace shogi.UI
             Console.WriteLine("Игра завершена!");
 
             Console.Write("Введите имя игрока: ");
-            var name = Console.ReadLine();
+            var name = Console.ReadLine() ?? "Player";
 
-            var record = new RecordEntry(name ?? "Player", engine.Score);
-            _recordStorage.AddRecord(record);
+            _recordStorage.AddRecord(new RecordEntry(name, engine.Score));
         }
 
         private async Task LoadGameAsync()
         {
-            var loaded = await _gameStorage.LoadAsync();
-            if (loaded == null)
+            var engine = await _gameStorage.LoadAsync();
+            if (engine == null)
             {
                 Console.WriteLine("Сохранение не найдено");
                 Console.ReadKey();
                 return;
             }
 
-            var engine = loaded;
             var board = new Board();
             board.UpdateFromGameEngine(engine.Board);
             var renderer = new ConsoleRenderer(board);
@@ -102,12 +106,14 @@ namespace shogi.UI
             {
                 Console.Clear();
                 renderer.Render();
-                Console.WriteLine("Введите ход:");
 
+                Console.WriteLine("Введите ход:");
                 var input = Console.ReadLine();
 
                 if (!engine.TryMakeMove(input))
                     Console.WriteLine("Неверный ход");
+
+                renderer.UpdateBoard(engine.Board);
             }
 
             Console.WriteLine("Игра завершена");

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using shogi.Data;
 
-namespace shogi
+namespace shogi.Logic
 {
     public class GameEngine
     {
