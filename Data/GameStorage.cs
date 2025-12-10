@@ -32,7 +32,7 @@ namespace shogi.Data
             Piece[,] Board = new Piece[9, 9];
             for (int x = 0; x < 9; x++)
             {
-                for (int y = 0; y < 9)
+                for (int y = 0; y < 9; y++)
                 {
                     PieceType Type = (PieceType)Enum.Parse(typeof(PieceType), boardInfo[(x+1)*y]);
                     Player Owner = (Player)Enum.Parse(typeof(Player), boardInfo[(x+1)*y]);
