@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using shogi.Logic;
 
 namespace shogi.Data
 {
@@ -42,11 +43,9 @@ namespace shogi.Data
             }
 
             GameEngine game = new GameEngine();
-            game.Board = Board;
-            game.CurrentPlayer = CurrentPlayer;
-            game
+            game.Init(Board, CurrentPlayer, Score);
             
-            return null;
+            return game;
 
         }
 

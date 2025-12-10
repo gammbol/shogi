@@ -82,6 +82,13 @@ namespace shogi.Logic
             }
         }
 
+        public void Init(Piece[,] board, Player currentPlayer, int score)
+        {
+            Board = board;
+            CurrentPlayer = currentPlayer;
+            Score = score;
+        }
+
         public bool TryMakeMove(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
