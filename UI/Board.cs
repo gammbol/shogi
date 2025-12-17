@@ -56,7 +56,7 @@ namespace shogi.UI
 
         public void Render()
         {
-            Console.WriteLine("  a b c d e f g h i");
+            Console.WriteLine("   a b c d e f g h i");
             for (int row = 0; row < Size; row++)
             {
                 Console.Write($"{row + 1} ");

@@ -67,7 +67,7 @@ namespace shogi.UI
                 Console.Clear();
                 renderer.Render();
 
-                Console.WriteLine("Введите ход (пример: 2 3 2 4):");
+                Console.WriteLine("Введите ход (пример: 5 3 5 4):");
                 var input = Console.ReadLine();
 
                 if (!await engine.TryMakeMove(input))
