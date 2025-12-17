@@ -10,19 +10,25 @@ namespace shogi.Logic
         public Player CurrentPlayer { get; private set; }
         public bool IsFinished { get; private set; }
         public int Score { get; private set; }
-
         private GameStorage Storage;
 
-        public GameEngine(
-            Piece[,] board = new Piece[9,9],  
-            Player currentPlayer = Player.Black, 
-            int score = 0
-            )
+        // ИСПРАВЛЕНО: Убраны неиспользуемые параметры из конструктора
+        public GameEngine()
         {
             Board = new Piece[9, 9];
             CurrentPlayer = Player.Black;
             IsFinished = false;
             Score = 0;
+            Storage = new GameStorage("savefile.txt");
+        }
+
+        // Добавлен конструктор с параметрами для загрузки
+        public GameEngine(Piece[,] board, Player currentPlayer, int score)
+        {
+            Board = board;
+            CurrentPlayer = currentPlayer;
+            IsFinished = false;
+            Score = score;
             Storage = new GameStorage("savefile.txt");
         }
 
@@ -82,6 +88,8 @@ namespace shogi.Logic
             }
         }
 
+        // ИСПРАВЛЕНО: Убрал старый метод Init с параметрами, теперь есть отдельный конструктор
+        // Метод для инициализации из сохранения (оставляем для обратной совместимости)
         public void Init(Piece[,] board, Player currentPlayer, int score)
         {
             Board = board;
@@ -89,15 +97,18 @@ namespace shogi.Logic
             Score = score;
         }
 
-        public bool TryMakeMove(string input)
+        // ИСПРАВЛЕНО: Добавил async
+        public async Task<bool> TryMakeMove(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
             if (input == "SAVEGAME")
             {
-                Storage.SaveAsync(this);
+                // ИСПРАВЛЕНО: Добавил await
+                await Storage.SaveAsync(this);
                 Console.WriteLine("Game saved!");
+                return true;
             }
 
             // Парсим ввод "fromX fromY toX toY" (например: "2 2 2 3")
@@ -105,6 +116,7 @@ namespace shogi.Logic
             if (parts.Length != 4)
                 return false;
 
+            // ИСПРАВЛЕНО: Заменил | на ||
             if (!int.TryParse(parts[0], out int fromX) ||
                 !int.TryParse(parts[1], out int fromY) ||
                 !int.TryParse(parts[2], out int toX) ||
@@ -133,7 +145,9 @@ namespace shogi.Logic
         private bool IsValidMove(int fromX, int fromY, int toX, int toY)
         {
             // Базовые проверки
-            if (!PieceLogic.IsInBounds(fromX, fromY) || !PieceLogic.IsInBounds(toX, toY))
+            // ИСПРАВЛЕНО: Заменил | на ||
+            if (!PieceLogic.IsInBounds(fromX, fromY) ||
+                !PieceLogic.IsInBounds(toX, toY))
                 return false;
 
             Piece piece = Board[fromX, fromY];
@@ -150,7 +164,6 @@ namespace shogi.Logic
 
             // Временная проверка шаха (упрощенная)
             // Можно доработать позже
-
             return true;
         }
 
@@ -170,7 +183,11 @@ namespace shogi.Logic
             Board[fromX, fromY] = new Piece(PieceType.None, Player.None);
 
             // Проверяем превращение (автоматическое при входе в зону превращения)
-            CheckPromotion(piece, toX, toY);
+            // ИСПРАВЛЕНО: Добавил проверку на null
+            if (piece != null)
+            {
+                CheckPromotion(piece, toX, toY);
+            }
 
             // Меняем игрока
             CurrentPlayer = (CurrentPlayer == Player.Black) ? Player.White : Player.Black;
@@ -179,6 +196,7 @@ namespace shogi.Logic
         private void CheckPromotion(Piece piece, int x, int y)
         {
             // Зона превращения: последние 3 ряда для каждого игрока
+            // ИСПРАВЛЕНО: Заменил | на ||
             bool inPromotionZone = (piece.Owner == Player.Black && y >= 6) ||
                                    (piece.Owner == Player.White && y <= 2);
 

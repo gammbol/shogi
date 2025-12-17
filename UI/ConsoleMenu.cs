@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using shogi;
 using shogi.Data;
 using shogi.Logic;
+using shogi.UI;
 
-namespace Shogi.UI
+namespace shogi.UI
 {
     public class ConsoleMenu
     {
@@ -57,9 +58,9 @@ namespace Shogi.UI
             var engine = new GameEngine();
             engine.Init();
 
-            var board = new Board();
-            board.UpdateFromGameEngine(engine.Board);
-            var renderer = new ConsoleRenderer(board);
+            var boardUI = new shogi.UI.Board();
+            boardUI.UpdateFromGameEngine(engine.Board);
+            var renderer = new ConsoleRenderer(boardUI);
 
             while (!engine.IsFinished)
             {
@@ -69,7 +70,7 @@ namespace Shogi.UI
                 Console.WriteLine("Введите ход (пример: 2 3 2 4):");
                 var input = Console.ReadLine();
 
-                if (!engine.TryMakeMove(input))
+                if (!await engine.TryMakeMove(input))
                 {
                     Console.WriteLine("Неверный ход");
                     Thread.Sleep(800);
@@ -110,7 +111,7 @@ namespace Shogi.UI
                 Console.WriteLine("Введите ход:");
                 var input = Console.ReadLine();
 
-                if (!engine.TryMakeMove(input))
+                if (!await engine.TryMakeMove(input))
                     Console.WriteLine("Неверный ход");
 
                 renderer.UpdateBoard(engine.Board);

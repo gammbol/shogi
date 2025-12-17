@@ -1,4 +1,4 @@
-﻿using Shogi.UI;
+﻿using shogi.UI;
 
 namespace shogi
 {
