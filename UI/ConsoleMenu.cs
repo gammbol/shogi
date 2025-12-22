@@ -67,6 +67,8 @@ namespace shogi.UI
                 Console.Clear();
                 renderer.Render();
 
+                Console.WriteLine($"\nХод игрока: {engine.CurrentPlayer}");
+                Console.WriteLine($"Счет: {engine.Score}");
                 Console.WriteLine("Введите ход (пример: 5 3 5 4):");
                 var input = Console.ReadLine();
 
