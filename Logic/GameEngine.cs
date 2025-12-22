@@ -97,50 +97,67 @@ namespace shogi.Logic
             Score = score;
         }
 
-        // ИСПРАВЛЕНО: Добавил async
         public async Task<bool> TryMakeMove(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
-            if (input == "SAVEGAME")
-            {
-                // ИСПРАВЛЕНО: Добавил await
-                await Storage.SaveAsync(this);
-                Console.WriteLine("Game saved!");
-                return true;
-            }
+            // команды тут больше не обрабатываем
+            // SAVE обрабатывается в UI
 
-            // Парсим ввод "fromX fromY toX toY" (например: "2 2 2 3")
-            var parts = input.Split(' ');
+            var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 4)
                 return false;
 
-            // ИСПРАВЛЕНО: Заменил | на ||
-            if (!int.TryParse(parts[0], out int fromX) ||
-                !int.TryParse(parts[1], out int fromY) ||
-                !int.TryParse(parts[2], out int toX) ||
-                !int.TryParse(parts[3], out int toY))
+            // формат: 5 c 5 d
+            if (!int.TryParse(parts[0], out int fromX))
                 return false;
 
-            // Приводим к координатам доски (индексы массива)
+            if (!TryParseLetter(parts[1], out int fromY))
+                return false;
+
+            if (!int.TryParse(parts[2], out int toX))
+                return false;
+
+            if (!TryParseLetter(parts[3], out int toY))
+                return false;
+
+            // диапазон
+            if (fromX < 1 || fromX > 9 || toX < 1 || toX > 9)
+                return false;
+
+            // приводим к индексам массива
             fromX--;
             fromY--;
             toX--;
             toY--;
 
-            // Проверяем валидность хода
             if (!IsValidMove(fromX, fromY, toX, toY))
                 return false;
 
-            // Выполняем ход
             ExecuteMove(fromX, fromY, toX, toY);
-
-            // Проверяем конец игры
             CheckGameEnd();
 
             return true;
         }
+
+        private bool TryParseLetter(string value, out int number)
+        {
+            number = 0;
+
+            if (string.IsNullOrWhiteSpace(value) || value.Length != 1)
+                return false;
+
+            char c = char.ToLower(value[0]);
+
+            if (c < 'a' || c > 'i')
+                return false;
+
+            number = (c - 'a') + 1; // a = 1, b = 2, ..., i = 9
+            return true;
+        }
+
+
 
         private bool IsValidMove(int fromX, int fromY, int toX, int toY)
         {

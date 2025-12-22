@@ -70,7 +70,7 @@ namespace shogi.UI
 
                 Console.WriteLine($"\nХод игрока: {engine.CurrentPlayer}");
                 Console.WriteLine($"Счет: {engine.Score}");
-                Console.WriteLine("Введите ход (пример: 5 3 5 4) или команду SAVE:");
+                Console.WriteLine("Введите ход (пример: 1 a 1 b) или команду SAVE:");
                 var input = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(input))
