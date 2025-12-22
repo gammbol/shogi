@@ -67,16 +67,30 @@ namespace shogi.UI
                 Console.Clear();
                 renderer.Render();
 
+
                 Console.WriteLine($"\nХод игрока: {engine.CurrentPlayer}");
                 Console.WriteLine($"Счет: {engine.Score}");
-                Console.WriteLine("Введите ход (пример: 5 3 5 4):");
+                Console.WriteLine("Введите ход (пример: 5 3 5 4) или команду SAVE:");
                 var input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input))
+                    continue;
+
+                if (input.Trim().ToUpper() == "SAVE")
+                {
+                    await _gameStorage.SaveAsync(engine);
+                    Console.WriteLine("Игра сохранена. Возврат в меню...");
+                    Thread.Sleep(1000);
+                    return;
+                }
+
 
                 if (!await engine.TryMakeMove(input))
                 {
                     Console.WriteLine("Неверный ход");
                     Thread.Sleep(800);
                 }
+
 
                 renderer.UpdateBoard(engine.Board);
             }
