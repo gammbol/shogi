@@ -84,6 +84,16 @@ namespace shogi.UI
                     return;
                 }
 
+                if (input.Trim().ToUpper() == "SURRENDER")
+                {
+                    Console.Clear();
+                    Console.WriteLine($"Игрок {engine.CurrentPlayer} сдался.");
+                    Console.WriteLine("Партия завершена.");
+                    Console.WriteLine("Нажмите любую клавишу для возврата в меню...");
+                    Console.ReadKey();
+                    return; // выход в главное меню
+                }
+
 
                 if (!await engine.TryMakeMove(input))
                 {
