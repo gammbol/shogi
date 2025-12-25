@@ -14,7 +14,7 @@ namespace shogi.UI
     {
         private readonly RecordStorage _recordStorage = new("records.txt");
         private readonly GameStorage _gameStorage = new("savegame.txt");
-
+        
         public async Task RunAsync()
         {
             while (true)
@@ -52,16 +52,9 @@ namespace shogi.UI
                 }
             }
         }
-
-        private async Task StartNewGameAsync()
+        
+        public async void RunGame(GameEngine engine, Board board, ConsoleRenderer renderer)
         {
-            var engine = new GameEngine();
-            engine.Init();
-
-            var boardUI = new shogi.UI.Board();
-            boardUI.UpdateFromGameEngine(engine.Board);
-            var renderer = new ConsoleRenderer(boardUI);
-
             while (!engine.IsFinished)
             {
                 Console.Clear();
@@ -79,8 +72,9 @@ namespace shogi.UI
                 if (input.Trim().ToUpper() == "SAVE")
                 {
                     await _gameStorage.SaveAsync(engine);
-                    Console.WriteLine("Игра сохранена. Возврат в меню...");
-                    Thread.Sleep(1000);
+                    Console.WriteLine("Игра сохранена.");
+                    Console.WriteLine("Нажмите любую клавишу для возврата в меню...");
+                    Console.ReadKey();
                     return;
                 }
 
@@ -115,6 +109,18 @@ namespace shogi.UI
             _recordStorage.AddRecord(new RecordEntry(name, engine.Score));
         }
 
+        private async Task StartNewGameAsync()
+        {
+            var engine = new GameEngine();
+            engine.Init();
+
+            var boardUI = new Board();
+            boardUI.UpdateFromGameEngine(engine.Board);
+            var renderer = new ConsoleRenderer(boardUI);
+
+            RunGame(engine, boardUI, renderer);
+        }
+
         private async Task LoadGameAsync()
         {
             var engine = await _gameStorage.LoadAsync();
@@ -129,22 +135,7 @@ namespace shogi.UI
             board.UpdateFromGameEngine(engine.Board);
             var renderer = new ConsoleRenderer(board);
 
-            while (!engine.IsFinished)
-            {
-                Console.Clear();
-                renderer.Render();
-
-                Console.WriteLine("Введите ход:");
-                var input = Console.ReadLine();
-
-                if (!await engine.TryMakeMove(input))
-                    Console.WriteLine("Неверный ход");
-
-                renderer.UpdateBoard(engine.Board);
-            }
-
-            Console.WriteLine("Игра завершена");
-            Console.ReadKey();
+            RunGame(engine, board, renderer);
         }
 
         private void ShowRecords()
