@@ -14,7 +14,7 @@ namespace shogi.UI
     {
         private readonly RecordStorage _recordStorage = new("records.txt");
         private readonly GameStorage _gameStorage = new("savegame.txt");
-
+        
         public async Task RunAsync()
         {
             while (true)
@@ -51,6 +51,61 @@ namespace shogi.UI
                         break;
                 }
             }
+        }
+        
+        public void RunGame()
+        {
+            while (!engine.IsFinished)
+            {
+                Console.Clear();
+                renderer.Render();
+
+
+                Console.WriteLine($"\nХод игрока: {engine.CurrentPlayer}");
+                Console.WriteLine($"Счет: {engine.Score}");
+                Console.WriteLine("Введите ход (пример: 1 a 1 b) или команду SAVE:");
+                var input = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(input))
+                    continue;
+
+                if (input.Trim().ToUpper() == "SAVE")
+                {
+                    await _gameStorage.SaveAsync(engine);
+                    Console.WriteLine("Игра сохранена. Возврат в меню...");
+                    Thread.Sleep(1000);
+                    return;
+                }
+
+                if (input.Trim().ToUpper() == "SURRENDER")
+                {
+                    Console.Clear();
+                    Console.WriteLine($"Игрок {engine.CurrentPlayer} сдался.");
+                    Console.WriteLine("Партия завершена.");
+                    Console.WriteLine("Нажмите любую клавишу для возврата в меню...");
+                    Console.ReadKey();
+                    return; // выход в главное меню
+                }
+
+
+                if (!await engine.TryMakeMove(input))
+                {
+                    Console.WriteLine("Неверный ход");
+                    Thread.Sleep(800);
+                }
+
+
+                renderer.UpdateBoard(engine.Board);
+            }
+
+            Console.Clear();
+            renderer.Render();
+            Console.WriteLine("Игра завершена!");
+
+            Console.Write("Введите имя игрока: ");
+            var name = Console.ReadLine() ?? "Player";
+
+            _recordStorage.AddRecord(new RecordEntry(name, engine.Score));
         }
 
         private async Task StartNewGameAsync()
