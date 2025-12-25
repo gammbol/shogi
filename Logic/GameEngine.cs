@@ -199,6 +199,12 @@ namespace shogi.Logic
             Piece target = Board[toX, toY];
             if (target != null && target.Type != PieceType.None && target.Owner != piece.Owner)
             {
+                if (target.Type == PieceType.King)
+                {
+                    IsFinished = true;
+                    return;
+                }
+
                 Score += GetPieceValue(target.Type);
             }
 
