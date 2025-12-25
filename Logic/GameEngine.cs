@@ -99,6 +99,9 @@ namespace shogi.Logic
 
         public async Task<bool> TryMakeMove(string input)
         {
+            if (IsFinished)
+                return false;
+
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
