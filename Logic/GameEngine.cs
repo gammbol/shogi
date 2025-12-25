@@ -175,6 +175,10 @@ namespace shogi.Logic
             if (piece.Owner != CurrentPlayer)
                 return false;
 
+            Piece target = Board[toX, toY];
+            if (target != null && target.Type != PieceType.None && target.Owner == CurrentPlayer)
+                return false;
+
             // Проверяем логику фигуры
             if (!PieceLogic.CanMove(Board, piece, fromX, fromY, toX, toY))
                 return false;
