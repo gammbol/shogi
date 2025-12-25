@@ -287,9 +287,13 @@ namespace shogi.Logic
                             blackKingFound = true;
                         else if (piece.Owner == Player.White)
                             whiteKingFound = true;
+
+                        if (blackKingFound && whiteKingFound)
+                            return;
                     }
                 }
             }
+
 
             if (!blackKingFound || !whiteKingFound)
             {
