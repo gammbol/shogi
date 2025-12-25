@@ -141,8 +141,17 @@ namespace shogi.UI
         private void ShowRecords()
         {
             var list = _recordStorage.LoadRecords();
-
+            
             Console.Clear();
+            
+            if (list.Count == 0)
+            {
+                Console.WriteLine("Рекордов пока нет, время поставить свой!");
+                Console.Write("Нажмите любую кнопку для возвращения в главное меню...");
+                Console.ReadKey();
+                return;
+            }
+            
             Console.WriteLine("Лучшие партии:");
 
             foreach (var r in list.Take(10))
