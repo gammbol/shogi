@@ -178,6 +178,10 @@ namespace shogi.Logic
             if (piece.Owner != CurrentPlayer)
                 return false;
 
+            // Нельзя ходить в ту же клетку
+            if (fromX == toX && fromY == toY)
+                return false;
+
             Piece target = Board[toX, toY];
             if (target != null && target.Type != PieceType.None && target.Owner == CurrentPlayer)
                 return false;
