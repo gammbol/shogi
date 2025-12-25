@@ -238,10 +238,14 @@ namespace shogi.Logic
             bool inPromotionZone = (piece.Owner == Player.Black && y >= 6) ||
                                    (piece.Owner == Player.White && y <= 2);
 
-            if (inPromotionZone && !piece.Promoted && CanPromote(piece.Type))
+            if (piece.Type == PieceType.King || piece.Type == PieceType.Gold)
+                return;
+
+            if (inPromotionZone && !piece.Promoted)
             {
                 piece.Promoted = true;
             }
+
         }
 
         private bool CanPromote(PieceType type)
