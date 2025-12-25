@@ -200,6 +200,8 @@ namespace shogi.Logic
             if (IsFinished)
                 return;
             Piece piece = Board[fromX, fromY];
+            if (piece == null || piece.Type == PieceType.None)
+                return;
 
             // Если взяли фигуру - увеличиваем счет
             Piece target = Board[toX, toY];
