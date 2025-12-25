@@ -45,15 +45,15 @@ namespace shogi.Logic
 
             // Расставляем фигуры черных (снизу, y = 0-2)
             // 1-й ряд (y=2)
-            Board[0, 2] = new Piece(PieceType.Lance, Player.Black);
-            Board[1, 2] = new Piece(PieceType.Knight, Player.Black);
-            Board[2, 2] = new Piece(PieceType.Silver, Player.Black);
-            Board[3, 2] = new Piece(PieceType.Gold, Player.Black);
-            Board[4, 2] = new Piece(PieceType.King, Player.Black);
-            Board[5, 2] = new Piece(PieceType.Gold, Player.Black);
-            Board[6, 2] = new Piece(PieceType.Silver, Player.Black);
-            Board[7, 2] = new Piece(PieceType.Knight, Player.Black);
-            Board[8, 2] = new Piece(PieceType.Lance, Player.Black);
+            Board[0, 0] = new Piece(PieceType.Lance, Player.Black);
+            Board[1, 0] = new Piece(PieceType.Knight, Player.Black);
+            Board[2, 0] = new Piece(PieceType.Silver, Player.Black);
+            Board[3, 0] = new Piece(PieceType.Gold, Player.Black);
+            Board[4, 0] = new Piece(PieceType.King, Player.Black);
+            Board[5, 0] = new Piece(PieceType.Gold, Player.Black);
+            Board[6, 0] = new Piece(PieceType.Silver, Player.Black);
+            Board[7, 0] = new Piece(PieceType.Knight, Player.Black);
+            Board[8, 0] = new Piece(PieceType.Lance, Player.Black);
 
             // 2-й ряд (y=1)
             Board[1, 1] = new Piece(PieceType.Bishop, Player.Black);
@@ -62,20 +62,20 @@ namespace shogi.Logic
             // 3-й ряд (y=0) - пешки
             for (int x = 0; x < 9; x++)
             {
-                Board[x, 0] = new Piece(PieceType.Pawn, Player.Black);
+                Board[x, 2] = new Piece(PieceType.Pawn, Player.Black);
             }
 
             // Расставляем фигуры белых (сверху, y = 6-8)
             // 7-й ряд (y=6)
-            Board[0, 6] = new Piece(PieceType.Lance, Player.White);
-            Board[1, 6] = new Piece(PieceType.Knight, Player.White);
-            Board[2, 6] = new Piece(PieceType.Silver, Player.White);
-            Board[3, 6] = new Piece(PieceType.Gold, Player.White);
-            Board[4, 6] = new Piece(PieceType.King, Player.White);
-            Board[5, 6] = new Piece(PieceType.Gold, Player.White);
-            Board[6, 6] = new Piece(PieceType.Silver, Player.White);
-            Board[7, 6] = new Piece(PieceType.Knight, Player.White);
-            Board[8, 6] = new Piece(PieceType.Lance, Player.White);
+            Board[0, 8] = new Piece(PieceType.Lance, Player.White);
+            Board[1, 8] = new Piece(PieceType.Knight, Player.White);
+            Board[2, 8] = new Piece(PieceType.Silver, Player.White);
+            Board[3, 8] = new Piece(PieceType.Gold, Player.White);
+            Board[4, 8] = new Piece(PieceType.King, Player.White);
+            Board[5, 8] = new Piece(PieceType.Gold, Player.White);
+            Board[6, 8] = new Piece(PieceType.Silver, Player.White);
+            Board[7, 8] = new Piece(PieceType.Knight, Player.White);
+            Board[8, 8] = new Piece(PieceType.Lance, Player.White);
 
             // 8-й ряд (y=7)
             Board[7, 7] = new Piece(PieceType.Bishop, Player.White);
@@ -84,7 +84,7 @@ namespace shogi.Logic
             // 9-й ряд (y=8) - пешки
             for (int x = 0; x < 9; x++)
             {
-                Board[x, 8] = new Piece(PieceType.Pawn, Player.White);
+                Board[x, 6] = new Piece(PieceType.Pawn, Player.White);
             }
         }
 
