@@ -72,8 +72,9 @@ namespace shogi.UI
                 if (input.Trim().ToUpper() == "SAVE")
                 {
                     await _gameStorage.SaveAsync(engine);
-                    Console.WriteLine("Игра сохранена. Возврат в меню...");
-                    Thread.Sleep(1000);
+                    Console.WriteLine("Игра сохранена.");
+                    Console.WriteLine("Нажмите любую клавишу для возврата в меню...");
+                    Console.ReadKey();
                     return;
                 }
 
@@ -134,47 +135,7 @@ namespace shogi.UI
             board.UpdateFromGameEngine(engine.Board);
             var renderer = new ConsoleRenderer(board);
 
-            while (!engine.IsFinished)
-            {
-                Console.WriteLine($"\nХод игрока: {engine.CurrentPlayer}");
-                Console.WriteLine($"Счет: {engine.Score}");
-                Console.WriteLine("Введите ход (пример: 1 a 1 b) или команду SAVE:");
-                var input = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(input))
-                    continue;
-
-                if (input.Trim().ToUpper() == "SAVE")
-                {
-                    await _gameStorage.SaveAsync(engine);
-                    Console.WriteLine("Игра сохранена. Возврат в меню...");
-                    Thread.Sleep(1000);
-                    return;
-                }
-
-                if (input.Trim().ToUpper() == "SURRENDER")
-                {
-                    Console.Clear();
-                    Console.WriteLine($"Игрок {engine.CurrentPlayer} сдался.");
-                    Console.WriteLine("Партия завершена.");
-                    Console.WriteLine("Нажмите любую клавишу для возврата в меню...");
-                    Console.ReadKey();
-                    return; // выход в главное меню
-                }
-
-
-                if (!await engine.TryMakeMove(input))
-                {
-                    Console.WriteLine("Неверный ход");
-                    Thread.Sleep(800);
-                }
-
-
-                renderer.UpdateBoard(engine.Board);
-            }
-
-            Console.WriteLine("Игра завершена");
-            Console.ReadKey();
+            RunGame(engine, board, renderer);
         }
 
         private void ShowRecords()
