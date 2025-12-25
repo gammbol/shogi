@@ -197,6 +197,8 @@ namespace shogi.Logic
 
         private void ExecuteMove(int fromX, int fromY, int toX, int toY)
         {
+            if (IsFinished)
+                return;
             Piece piece = Board[fromX, fromY];
 
             // Если взяли фигуру - увеличиваем счет
