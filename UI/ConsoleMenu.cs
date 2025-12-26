@@ -55,7 +55,7 @@ namespace shogi.UI
         
         public async void RunGame(GameEngine engine, Board board, ConsoleRenderer renderer)
         {
-            String[] steps;
+            List<String> steps = new List<string>();
             
             while (!engine.IsFinished)
             {
@@ -90,6 +90,27 @@ namespace shogi.UI
                     return; // выход в главное меню
                 }
 
+                if (input.Trim().ToUpper() == "HISTORY")
+                {
+                    Console.Clear();
+
+                    if (steps.Count == 0)
+                    {
+                        Console.WriteLine("Ходов нет!");
+                    }
+                    else
+                    {
+                        foreach (var step in steps)
+                        {
+                            Console.WriteLine(step);
+                        }
+                    }
+
+                    Console.WriteLine("Нажмите любую кнопку для продолжения...");
+                    Console.ReadKey();
+                    continue;
+                }
+
 
                 if (!await engine.TryMakeMove(input))
                 {
@@ -98,7 +119,8 @@ namespace shogi.UI
                 }
                 else
                 {
-                    
+                    String[] splittedStep = input.Split(' ');
+                    steps.Add($"{splittedStep[0]}{splittedStep[1]} -> {splittedStep[2]}{splittedStep[3]}");
                 }
 
 
