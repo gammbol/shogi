@@ -139,7 +139,6 @@ namespace shogi.Logic
                 return false;
 
             ExecuteMove(fromX, fromY, toX, toY);
-            CheckGameEnd();
 
             return true;
         }
@@ -160,12 +159,9 @@ namespace shogi.Logic
             return true;
         }
 
-
-
         private bool IsValidMove(int fromX, int fromY, int toX, int toY)
         {
             // Базовые проверки
-            // ИСПРАВЛЕНО: Заменил | на ||
             if (!PieceLogic.IsInBounds(fromX, fromY) ||
                 !PieceLogic.IsInBounds(toX, toY))
                 return false;
@@ -190,8 +186,10 @@ namespace shogi.Logic
             if (!PieceLogic.CanMove(Board, piece, fromX, fromY, toX, toY))
                 return false;
 
-            // Временная проверка шаха (упрощенная)
-            // Можно доработать позже
+            // Проверяем, не оставляет ли ход своего короля под шахом
+            if (WouldLeaveKingInCheck(fromX, fromY, toX, toY, piece.Owner))
+                return false;
+
             return true;
         }
 
@@ -199,6 +197,7 @@ namespace shogi.Logic
         {
             if (IsFinished)
                 return;
+
             Piece piece = Board[fromX, fromY];
             if (piece == null || piece.Type == PieceType.None)
                 return;
@@ -210,6 +209,8 @@ namespace shogi.Logic
                 if (target.Type == PieceType.King)
                 {
                     IsFinished = true;
+                    Console.WriteLine("\n=== КОРОЛЬ ВЗЯТ! ===");
+                    Console.WriteLine("Игра окончена.");
                     return;
                 }
 
@@ -221,7 +222,6 @@ namespace shogi.Logic
             Board[fromX, fromY] = new Piece(PieceType.None, Player.None);
 
             // Проверяем превращение (автоматическое при входе в зону превращения)
-            // ИСПРАВЛЕНО: Добавил проверку на null
             if (piece != null)
             {
                 CheckPromotion(piece, toX, toY);
@@ -229,12 +229,14 @@ namespace shogi.Logic
 
             // Меняем игрока
             CurrentPlayer = (CurrentPlayer == Player.Black) ? Player.White : Player.Black;
+
+            // Проверяем окончание игры
+            CheckGameEnd();
         }
 
         private void CheckPromotion(Piece piece, int x, int y)
         {
             // Зона превращения: последние 3 ряда для каждого игрока
-            // ИСПРАВЛЕНО: Заменил | на ||
             bool inPromotionZone = (piece.Owner == Player.Black && y >= 6) ||
                                    (piece.Owner == Player.White && y <= 2);
 
@@ -245,13 +247,6 @@ namespace shogi.Logic
             {
                 piece.Promoted = true;
             }
-
-        }
-
-        private bool CanPromote(PieceType type)
-        {
-            // Король и золото не превращаются
-            return type != PieceType.King && type != PieceType.Gold;
         }
 
         private int GetPieceValue(PieceType type)
@@ -270,9 +265,181 @@ namespace shogi.Logic
             };
         }
 
+        // ========== НОВЫЕ МЕТОДЫ ДЛЯ ПРОВЕРКИ ШАХА И МАТА ==========
+
+        // 1. Найти позицию короля
+        private (int x, int y)? FindKingPosition(Player kingOwner)
+        {
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    var piece = Board[x, y];
+                    if (piece != null &&
+                        piece.Type == PieceType.King &&
+                        piece.Owner == kingOwner)
+                    {
+                        return (x, y);
+                    }
+                }
+            }
+            return null; // Король не найден (уже взят)
+        }
+
+        // 2. Проверка шаха (король под атакой)
+        private bool IsKingInCheck(Player kingOwner)
+        {
+            var kingPos = FindKingPosition(kingOwner);
+            if (!kingPos.HasValue) return false;
+
+            int kingX = kingPos.Value.x;
+            int kingY = kingPos.Value.y;
+
+            // Проверяем все фигуры противника
+            Player opponent = (kingOwner == Player.Black) ? Player.White : Player.Black;
+
+            for (int x = 0; x < 9; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    var piece = Board[x, y];
+                    if (piece != null && piece.Owner == opponent)
+                    {
+                        if (PieceLogic.CanMove(Board, piece, x, y, kingX, kingY))
+                        {
+                            return true; // Шах!
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        // 3. Проверка, не оставляет ли ход своего короля под шахом
+        private bool WouldLeaveKingInCheck(int fromX, int fromY, int toX, int toY, Player player)
+        {
+            // Сохраняем исходное состояние
+            Piece originalPiece = Board[fromX, fromY];
+            Piece originalTarget = Board[toX, toY];
+
+            // Симулируем ход
+            Board[toX, toY] = originalPiece;
+            Board[fromX, fromY] = new Piece(PieceType.None, Player.None);
+
+            // Проверяем, остался ли король под шахом
+            bool kingInCheck = IsKingInCheck(player);
+
+            // Возвращаем всё на место
+            Board[fromX, fromY] = originalPiece;
+            Board[toX, toY] = originalTarget;
+
+            return kingInCheck;
+        }
+
+        // 4. Проверка всех возможных ходов для игрока
+        private bool HasAnyValidMove(Player player)
+        {
+            // Проверяем все фигуры игрока
+            for (int fromX = 0; fromX < 9; fromX++)
+            {
+                for (int fromY = 0; fromY < 9; fromY++)
+                {
+                    var piece = Board[fromX, fromY];
+                    if (piece != null && piece.Owner == player)
+                    {
+                        // Проверяем все возможные клетки для хода
+                        for (int toX = 0; toX < 9; toX++)
+                        {
+                            for (int toY = 0; toY < 9; toY++)
+                            {
+                                // Пропускаем если та же клетка
+                                if (fromX == toX && fromY == toY) continue;
+
+                                // Проверяем валидность хода
+                                if (IsValidMoveForCheck(fromX, fromY, toX, toY, player))
+                                {
+                                    return true; // Есть хотя бы один возможный ход
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false; // Нет ни одного возможного хода
+        }
+
+        // 5. Проверка валидности хода для проверки мата
+        private bool IsValidMoveForCheck(int fromX, int fromY, int toX, int toY, Player player)
+        {
+            // Базовые проверки
+            if (!PieceLogic.IsInBounds(fromX, fromY) || !PieceLogic.IsInBounds(toX, toY))
+                return false;
+
+            Piece piece = Board[fromX, fromY];
+            if (piece == null || piece.Type == PieceType.None || piece.Owner != player)
+                return false;
+
+            // Нельзя ходить на свою фигуру
+            Piece target = Board[toX, toY];
+            if (target != null && target.Type != PieceType.None && target.Owner == player)
+                return false;
+
+            // Проверяем логику фигуры
+            if (!PieceLogic.CanMove(Board, piece, fromX, fromY, toX, toY))
+                return false;
+
+            // Симулируем ход
+            Piece originalTarget = Board[toX, toY];
+            Board[toX, toY] = piece;
+            Board[fromX, fromY] = new Piece(PieceType.None, Player.None);
+
+            // Проверяем остался ли король под шахом после хода
+            bool stillInCheck = IsKingInCheck(player);
+
+            // Возвращаем все на место
+            Board[fromX, fromY] = piece;
+            Board[toX, toY] = originalTarget;
+
+            return !stillInCheck; // Ход валиден если после него нет шаха
+        }
+
+        // 6. Проверка мата
+        private bool IsCheckmate(Player kingOwner)
+        {
+            // Если король не под шахом - не мат
+            if (!IsKingInCheck(kingOwner))
+                return false;
+
+            // Если есть хоть один валидный ход - не мат
+            if (HasAnyValidMove(kingOwner))
+                return false;
+
+            return true; // Мат!
+        }
+
+        // 7. Основная проверка окончания игры
         private void CheckGameEnd()
         {
-            // Упрощенная проверка - если взят король
+            // Проверка на мат
+            if (IsCheckmate(Player.Black))
+            {
+                IsFinished = true;
+                Console.WriteLine("\n=== МАТ ЧЕРНОМУ КОРОЛЮ! ===");
+                Console.WriteLine("Белые победили!");
+                return;
+            }
+
+            if (IsCheckmate(Player.White))
+            {
+                IsFinished = true;
+                Console.WriteLine("\n=== МАТ БЕЛОМУ КОРОЛЮ! ===");
+                Console.WriteLine("Черные победили!");
+                return;
+            }
+
+            // Старая проверка на взятие короля
             bool blackKingFound = false;
             bool whiteKingFound = false;
 
@@ -287,17 +454,20 @@ namespace shogi.Logic
                             blackKingFound = true;
                         else if (piece.Owner == Player.White)
                             whiteKingFound = true;
-
-                        if (blackKingFound && whiteKingFound)
-                            return;
                     }
                 }
             }
 
-
             if (!blackKingFound || !whiteKingFound)
             {
                 IsFinished = true;
+                if (!blackKingFound && !whiteKingFound)
+                    Console.WriteLine("\n=== ОБА КОРОЛЯ ВЗЯТЫ! ===");
+                else if (!blackKingFound)
+                    Console.WriteLine("\n=== ЧЕРНЫЙ КОРОЛЬ ВЗЯТ! ===");
+                else
+                    Console.WriteLine("\n=== БЕЛЫЙ КОРОЛЬ ВЗЯТ! ===");
+                Console.WriteLine("Игра окончена.");
             }
         }
     }
