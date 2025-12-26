@@ -10,6 +10,7 @@ namespace shogi.Logic
         public Player CurrentPlayer { get; private set; }
         public bool IsFinished { get; private set; }
         public int Score { get; private set; }
+        public List<String> Steps { get; private set; }
         private GameStorage Storage;
 
         // ИСПРАВЛЕНО: Убраны неиспользуемые параметры из конструктора
@@ -20,16 +21,18 @@ namespace shogi.Logic
             IsFinished = false;
             Score = 0;
             Storage = new GameStorage("savefile.txt");
+            Steps = new List<string>();
         }
 
         // Добавлен конструктор с параметрами для загрузки
-        public GameEngine(Piece[,] board, Player currentPlayer, int score)
+        public GameEngine(Piece[,] board, Player currentPlayer, int score, List<String> steps)
         {
             Board = board;
             CurrentPlayer = currentPlayer;
             IsFinished = false;
             Score = score;
             Storage = new GameStorage("savefile.txt");
+            Steps = steps;
         }
 
         public void Init()
@@ -90,11 +93,12 @@ namespace shogi.Logic
 
         // ИСПРАВЛЕНО: Убрал старый метод Init с параметрами, теперь есть отдельный конструктор
         // Метод для инициализации из сохранения (оставляем для обратной совместимости)
-        public void Init(Piece[,] board, Player currentPlayer, int score)
+        public void Init(Piece[,] board, Player currentPlayer, int score, List<String> steps)
         {
             Board = board;
             CurrentPlayer = currentPlayer;
             Score = score;
+            Steps = steps;
         }
 
         public async Task<bool> TryMakeMove(string input)
@@ -139,6 +143,9 @@ namespace shogi.Logic
                 return false;
 
             ExecuteMove(fromX, fromY, toX, toY);
+            
+            String[] splittedStep = input.Split(' ');
+            Steps.Add($"{splittedStep[0]}{splittedStep[1]} -> {splittedStep[2]}{splittedStep[3]}");
 
             return true;
         }

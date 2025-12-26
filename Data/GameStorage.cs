@@ -57,8 +57,14 @@ namespace shogi.Data
                     }
                 }
 
+                List<String> steps = new List<string>();
+                for (int i = lineIndex; i < lines.Length; i++)
+                {
+                    steps.Add(lines[i]);
+                }
+
                 var game = new GameEngine();
-                game.Init(board, currentPlayer, score);
+                game.Init(board, currentPlayer, score, steps);
                 return game;
             }
             catch
@@ -80,6 +86,11 @@ namespace shogi.Data
                     var piece = game.Board[x, y];
                     saveString += $"{piece.Owner};{piece.Type};{piece.Promoted}\n";
                 }
+            }
+            
+            foreach (var line in game.Steps)
+            {
+                saveString += $"{line}\n";
             }
 
             await File.WriteAllTextAsync(_path, saveString);

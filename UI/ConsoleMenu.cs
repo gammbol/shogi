@@ -55,8 +55,6 @@ namespace shogi.UI
         
         public async void RunGame(GameEngine engine, Board board, ConsoleRenderer renderer)
         {
-            List<String> steps = new List<string>();
-            
             while (!engine.IsFinished)
             {
                 Console.Clear();
@@ -94,13 +92,13 @@ namespace shogi.UI
                 {
                     Console.Clear();
 
-                    if (steps.Count == 0)
+                    if (engine.Steps.Count == 0)
                     {
                         Console.WriteLine("Ходов нет!");
                     }
                     else
                     {
-                        foreach (var step in steps)
+                        foreach (var step in engine.Steps)
                         {
                             Console.WriteLine(step);
                         }
@@ -117,13 +115,7 @@ namespace shogi.UI
                     Console.WriteLine("Неверный ход");
                     Thread.Sleep(800);
                 }
-                else
-                {
-                    String[] splittedStep = input.Split(' ');
-                    steps.Add($"{splittedStep[0]}{splittedStep[1]} -> {splittedStep[2]}{splittedStep[3]}");
-                }
-
-
+                
                 renderer.UpdateBoard(engine.Board);
             }
 
