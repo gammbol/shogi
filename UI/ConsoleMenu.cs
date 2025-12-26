@@ -55,6 +55,8 @@ namespace shogi.UI
         
         public async void RunGame(GameEngine engine, Board board, ConsoleRenderer renderer)
         {
+            String[] steps;
+            
             while (!engine.IsFinished)
             {
                 Console.Clear();
@@ -93,6 +95,10 @@ namespace shogi.UI
                 {
                     Console.WriteLine("Неверный ход");
                     Thread.Sleep(800);
+                }
+                else
+                {
+                    
                 }
 
 
