@@ -31,7 +31,7 @@ namespace shogi.UI
                 switch (key)
                 {
                     case "1":
-                        await StartNewGameAsync();
+                        StartNewGameAsync();
                         break;
 
                     case "2":
@@ -110,7 +110,7 @@ namespace shogi.UI
                 }
 
 
-                if (!await engine.TryMakeMove(input))
+                if (!engine.TryMakeMove(input))
                 {
                     Console.WriteLine("Неверный ход");
                     Thread.Sleep(800);
@@ -129,7 +129,7 @@ namespace shogi.UI
             _recordStorage.AddRecord(new RecordEntry(name, engine.Score));
         }
 
-        private async Task StartNewGameAsync()
+        private void StartNewGameAsync()
         {
             var engine = new GameEngine();
             engine.Init();
@@ -143,7 +143,8 @@ namespace shogi.UI
 
         private async Task LoadGameAsync()
         {
-            var engine = await _gameStorage.LoadAsync();
+            //var engine = await _gameStorage.LoadAsync();
+            var engine = await Task.Run(_gameStorage.LoadAsync);
             if (engine == null)
             {
                 Console.WriteLine("Сохранение не найдено");

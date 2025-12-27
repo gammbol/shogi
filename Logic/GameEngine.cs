@@ -101,7 +101,7 @@ namespace shogi.Logic
             Steps = steps;
         }
 
-        public async Task<bool> TryMakeMove(string input)
+        public bool TryMakeMove(string input)
         {
             if (IsFinished)
                 return false;
